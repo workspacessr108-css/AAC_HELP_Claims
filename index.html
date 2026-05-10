@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Finance Portal</title>
+  <meta name="color-scheme" content="light" />
+  <meta name="theme-color" content="#1d4ed8" />
+  <style>
+    :root{
+      --bg:#f3f6fc; --panel:#ffffff; --fg:#0b1324; --muted:#5b6b82;
+      --brand-500:#2563eb; --brand-600:#1d4ed8; --brand-700:#1e40af; --ring:rgba(37, 99, 235, .28);
+    }
+    *,*::before,*::after{ box-sizing:border-box }
+    html,body{ height:100% }
+    body{
+      margin:0; background:linear-gradient(180deg,#eef2ff, #f3f6fc);
+      color:var(--fg); font-family: ui-sans-serif, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, Helvetica Neue, Arial;
+      display:grid; place-items:center; padding:28px;
+    }
+    .wrap{ width:min(92vw, 880px) }
+    .top{
+      display:flex; align-items:center; justify-content:space-between; margin-bottom:18px;
+    }
+    .brand{ display:flex; align-items:center; gap:12px }
+    .logo{ width:44px; height:44px; border-radius:12px; background:linear-gradient(135deg,var(--brand-600),var(--brand-700)); box-shadow:0 8px 18px rgba(29,78,216,.2) }
+    h1{ margin:0; font-size:22px; letter-spacing:.2px }
+    p.sub{ margin:2px 0 0 0; color:var(--muted); font-size:13px }
+    .grid{
+      display:grid; gap:16px; grid-template-columns: 1fr; margin-top:8px;
+    }
+    @media (min-width: 700px){ .grid{ grid-template-columns: 1fr 1fr; } }
+    .card{
+      background:#fff; border:1px solid #e5e7eb; border-radius:16px; padding:18px; box-shadow:0 12px 26px rgba(2,6,23,.08);
+      display:flex; flex-direction:column; gap:10px; justify-content:space-between;
+    }
+    .card h2{ margin:0; font-size:18px }
+    .card p{ margin:0; color:#5b6b82; font-size:13px; min-height:36px }
+    .actions{ display:flex; justify-content:flex-end }
+    .btn{
+      appearance:none; border-radius:12px; padding:11px 16px; font-weight:700; font-size:14px; cursor:pointer;
+      color:#fff; background:linear-gradient(180deg,var(--brand-500),var(--brand-600)); border:1px solid var(--brand-600);
+      box-shadow:0 8px 18px rgba(29,78,216,.18); transition: transform .06s ease, box-shadow .15s ease, filter .15s ease;
+      text-decoration:none; display:inline-flex; align-items:center; gap:8px;
+    }
+    .btn:hover{ filter:brightness(1.02); box-shadow:0 14px 24px rgba(29,78,216,.26) }
+    .btn:active{ transform:translateY(1px) }
+    .pill{ display:inline-block; font-size:12px; font-weight:700; color:#1e3a8a; background:#e0e7ff; border:1px solid #c7d2fe; border-radius:999px; padding:4px 10px }
+    ul{ padding-left:18px; margin:8px 0 0 0; color:#5b6b82; font-size:13px }
+    .footer{ margin-top:18px; text-align:center; color:#5b6b82; font-size:12px }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="top">
+      <div class="brand">
+        <div class="logo" aria-hidden="true"></div>
+        <div>
+          <h1>HELP Indore</h1>
+          <p class="sub">Finance Portal</p>
+        </div>
+      </div>
+    </div>
+
+
+    <div class="grid">
+      <div class="card">
+        <div>
+          <h2>Raise a Claim</h2>
+          <p>Submit expenses for reimbursement. Upload receipts, validate dates, and track status.</p>
+          <ul>
+            <li>Travel, Sunday Program, Camp, Health, Sponsorship</li>
+            <li>INR amounts with receipt attachment</li>
+          </ul>
+        </div>
+        <div class="actions">
+          <a class="btn" href="./claims.html" aria-label="Go to Claims form">Open Claims</a>
+        </div>
+      </div>
+
+
+      <div class="card">
+        <div>
+          <h2>Raise an Advance</h2>
+          <p>Request funds in advance for approved activities. Two-step confirmation included.</p>
+          <ul>
+            <li>Attachments are mandatory with details</li>
+            <li>INR amounts</li>
+          </ul>
+        </div>
+        <div class="actions">
+          <a class="btn" href="./advance.html" aria-label="Go to Advance form">Open Advance</a>
+        </div>
+      </div>
+    </div>
+
+
+    <div class="footer">Financial Integrity in Service of Krishna</div>
+  </div>
+</body>
+</html>
