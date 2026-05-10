@@ -1,0 +1,414 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Raise Advance</title>
+  <meta name="color-scheme" content="light" />
+  <meta name="theme-color" content="#1d4ed8" />
+  <style>
+    :root{
+      --bg:#f3f6fc; --panel:#ffffff; --panel-2:#f5f7fb; --fg:#0b1324; --muted:#5b6b82;
+      --brand-500:#2563eb; --brand-600:#1d4ed8; --brand-700:#1e40af; --ring:rgba(37, 99, 235, .28);
+      --ok:#16a34a; --error:#dc2626;
+    }
+    *,*::before,*::after{ box-sizing:border-box }
+    html,body{ height:100% }
+    body{
+      margin:0; color:var(--fg);
+      font-family: ui-sans-serif, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, Helvetica Neue, Arial;
+      background: var(--bg);
+      display:grid; place-items:center; padding:24px;
+    }
+    .card{
+      width:min(92vw, 760px);
+      background: var(--panel);
+      border:1px solid #e5e7eb;
+      border-radius:16px; padding:28px 26px; box-shadow:0 12px 26px rgba(2,6,23,0.08);
+    }
+    .header{ display:flex; align-items:flex-start; justify-content:space-between; gap:12px; margin-bottom:18px; border-bottom:1px solid #eef2f7; padding-bottom:14px; }
+    .title{ display:flex; align-items:center; gap:12px; }
+    .logo{ width:42px; height:42px; border-radius:10px; background: linear-gradient(135deg, var(--brand-600), var(--brand-700)); box-shadow:0 6px 12px rgba(29,78,216,.20); }
+    h1{ margin:0; font-size:22px; letter-spacing:.2px; }
+    .sub{ margin:2px 0 0 0; color:var(--muted); font-size:13px; }
+    .help{ font-size:12px; color:var(--muted); white-space:nowrap; }
+
+
+    form{ display:grid; gap:18px; }
+    .section-title{ margin:0; font-size:14px; font-weight:700; color:#334155; letter-spacing:.2px; }
+    .grid{ display:grid; gap:14px; }
+    @media (min-width: 640px){ .grid{ grid-template-columns: 1fr 1fr; } }
+    .field{ display:flex; flex-direction:column; gap:6px; }
+    label{ font-size:13px; color:#334155; font-weight:600; }
+    input, select, textarea{
+      appearance:none; width:100%; padding:12px 14px; border-radius:12px; color:var(--fg);
+      background:#fff; border:1px solid #e5e7eb;
+      outline: none; transition: border-color .15s, box-shadow .15s, background .15s, transform .06s;
+    }
+    input:hover, select:hover, textarea:hover{ border-color:#d1d5db; }
+    textarea{ min-height:108px; resize:vertical; }
+    input:focus, select:focus, textarea:focus{ border-color: var(--brand-600); box-shadow: 0 0 0 4px var(--ring); background:#fff; }
+    input:active, select:active, textarea:active{ transform: translateY(0.5px); }
+    .inline{ position:relative; }
+    .prefix{ position:absolute; inset-inline-start:12px; inset-block:0; display:grid; place-items:center; color:#4b5c77; }
+    .with-prefix{ padding-inline-start:30px; }
+
+
+    .actions{ display:flex; align-items:center; justify-content:space-between; gap:14px; margin-top:4px; }
+    .status{ min-height:20px; font-size:13px; color:#475569; }
+    .status.ok{ color:var(--ok); }
+    .status.err{ color:var(--error); }
+
+
+    .btn{
+      appearance:none; border-radius:12px; padding:11px 16px; font-weight:700; font-size:14px; cursor:pointer;
+      color:#fff; background: linear-gradient(180deg, var(--brand-500), var(--brand-600)); border:1px solid var(--brand-600);
+      box-shadow: 0 8px 18px rgba(29,78,216,.18); transition: transform .06s ease, box-shadow .15s ease, filter .15s ease;
+    }
+    .btn:hover{ filter: brightness(1.02); box-shadow:0 14px 24px rgba(29,78,216,.26); }
+    .btn:active{ transform: translateY(1px); filter: brightness(0.98); background: linear-gradient(180deg, var(--brand-600), var(--brand-700)); }
+    .btn[disabled]{ opacity:.65; cursor:not-allowed; filter: grayscale(.1); background: linear-gradient(180deg, #93c5fd, #60a5fa); border-color:#93c5fd; box-shadow:none; }
+
+
+    .spinner{ width:16px; height:16px; border-radius:50%; border:2px solid rgba(255,255,255,.45); border-top-color: rgba(255,255,255,1); animation: spin 1s linear infinite; }
+    @keyframes spin { to{ transform: rotate(360deg); } }
+    .row{ display:flex; align-items:center; gap:10px; }
+    small.sub{ color:var(--muted); }
+    a{ color: var(--brand-600); text-decoration: none; }
+    a:hover{ color: var(--brand-700); text-decoration: underline; }
+
+
+    /* Confirm modal */
+    .modal{ position:fixed; inset:0; background: rgba(11,19,36,.50); display:none; align-items:center; justify-content:center; padding:16px; }
+    .modal.show{ display:flex; }
+    .modal-content{ width:min(92vw, 560px); background:#fff; border:1px solid #e5e7eb; border-radius:14px; box-shadow:0 18px 40px rgba(2,6,23,.18); padding:18px; }
+    .modal-title{ margin:0 0 10px 0; font-size:18px; font-weight:800; color:#1f2937; }
+    .summary{ display:grid; gap:8px; font-size:14px; color:#334155; margin-bottom:12px; }
+    .summary div{ display:flex; gap:8px; }
+    .summary strong{ min-width:130px; font-weight:700; color:#0f172a; }
+    .modal-actions{ display:flex; justify-content:flex-end; gap:10px; }
+    .btn-secondary{ background:#fff; color:var(--brand-700); border:1px solid var(--brand-600); }
+    .btn-secondary:hover{ background:#f8fbff; color:var(--brand-700); box-shadow:0 6px 16px rgba(2,6,23,.06); }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <div class="header">
+      <div class="title">
+        <div class="logo" aria-hidden="true"></div>
+        <div>
+          <h1>Raise Advance</h1>
+          <p class="sub">Request funds in advance for approved activities</p>
+        </div>
+      </div>
+      <div class="help"><a href="./index.html">Back to Finance Portal</a></div>
+    </div>
+
+
+    <form id="advanceForm" novalidate>
+      <!-- route hint without renaming fields -->
+      <input type="hidden" name="form_kind" value="advance" />
+      <h2 class="section-title">Advance details</h2>
+      <div class="grid">
+        <div class="field">
+          <label for="name">Name *</label>
+          <input id="name" name="name" type="text" placeholder="Jane Doe" required autocomplete="name" />
+        </div>
+        <div class="field">
+          <label for="email">Email *</label>
+          <input id="email" name="email" type="email" placeholder="you@example.com" required autocomplete="email" />
+        </div>
+        <div class="field">
+          <label for="department">Department *</label>
+          <select id="department" name="department" required>
+            <option value="">Select department</option>
+            <option>Antardvipa</option>
+            <option>Ritudvipa</option>
+            <option>Temple</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="date">Needed By (Date) *</label>
+          <input id="date" name="date" type="date" required />
+        </div>
+        <div class="field">
+          <label for="type">Purpose *</label>
+          <select id="type" name="type" required>
+            <option value="">Select purpose</option>
+            <option>Travel</option>
+            <option>Sunday Program</option>
+            <option>Camp</option>
+            <option>Health</option>
+            <option>Sponsorship</option>
+            <option>Other</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="amount">Amount Requested (INR) *</label>
+          <div class="inline">
+            <span class="prefix" aria-hidden="true">₹</span>
+            <input id="amount" class="with-prefix" name="amount" type="number" min="0" step="0.01" placeholder="0.00" required inputmode="decimal" />
+          </div>
+          <small class="sub">Enter the amount in Indian Rupees.</small>
+        </div>
+        <div class="field" style="grid-column: 1 / -1;">
+          <label for="description">Justification / Notes</label>
+          <textarea id="description" name="description" placeholder="Provide justification, vendor, event details, etc."></textarea>
+        </div>
+        <div class="field" style="grid-column: 1 / -1;">
+          <label for="receipt">Attachment (Approval/Estimate) *</label>
+          <input id="receipt" name="receipt" type="file" accept="application/pdf,image/*" required />
+          <small class="sub">Attachment is mandatory. Max ~10MB recommended.</small>
+        </div>
+      </div>
+
+
+      <div class="actions">
+        <div id="status" class="status" role="status" aria-live="polite"></div>
+        <button id="submitBtn" class="btn" type="submit">
+          <span class="label">Request Advance</span>
+        </button>
+      </div>
+    </form>
+  </div>
+
+
+  <!-- Confirm dialog -->
+  <div id="confirmModal" class="modal" aria-hidden="true" role="dialog" aria-modal="true">
+    <div class="modal-content">
+      <h3 class="modal-title">Confirm advance request</h3>
+      <div class="summary">
+        <div><strong>Name:</strong> <span id="sum_name"></span></div>
+        <div><strong>Email:</strong> <span id="sum_email"></span></div>
+        <div><strong>Department:</strong> <span id="sum_department"></span></div>
+        <div><strong>Needed By:</strong> <span id="sum_date"></span></div>
+        <div><strong>Purpose:</strong> <span id="sum_type"></span></div>
+        <div><strong>Amount (INR):</strong> <span id="sum_amount"></span></div>
+        <div><strong>Notes:</strong> <span id="sum_description"></span></div>
+        <div><strong>Attachment:</strong> <span id="sum_receipt"></span></div>
+      </div>
+      <div class="modal-actions">
+        <button id="cancelConfirm" type="button" class="btn btn-secondary">Cancel</button>
+        <button id="confirmSubmit" type="button" class="btn">Confirm & Submit</button>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- Success dialog -->
+  <div id="successModal" class="modal" aria-hidden="true" role="dialog" aria-modal="true">
+    <div class="modal-content">
+      <div style="text-align: center; padding: 20px;">
+        <svg style="width: 64px; height: 64px; color: #16a34a; margin-bottom: 16px;" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+        </svg>
+        <h3 style="margin: 0 0 10px 0; color: #166534; font-size: 18px;">Success!</h3>
+        <p id="success_message" style="margin: 0 0 20px 0; color: #334155;">Your advance request has been submitted successfully.</p>
+        <button id="closeSuccess" class="btn" style="margin: 0 auto;">Close</button>
+      </div>
+    </div>
+  </div>
+
+
+  <script nonce="NjUwMjM1NDcsNTI5MjAxNzg5">
+    const scriptURL = "https://script.google.com/macros/s/AKfycbxTE9AvBXE6Ql6JzsP0DrF7aKjvDTWZNFL1fbIHIlrbAnvrcopY9mXRIMep37psRFMj2A/exec"; // Apps Script Web App URL
+    const form = document.getElementById("advanceForm");
+    const statusEl = document.getElementById("status");
+    const btn = document.getElementById("submitBtn");
+
+
+    // Confirm modal elements
+    const confirmModal = document.getElementById('confirmModal');
+    const sumName = document.getElementById('sum_name');
+    const sumEmail = document.getElementById('sum_email');
+    const sumDept = document.getElementById('sum_department');
+    const sumDate = document.getElementById('sum_date');
+    const sumType = document.getElementById('sum_type');
+    const sumAmount = document.getElementById('sum_amount');
+    const sumDesc = document.getElementById('sum_description');
+    const sumReceipt = document.getElementById('sum_receipt');
+    const cancelConfirmBtn = document.getElementById('cancelConfirm');
+    const confirmSubmitBtn = document.getElementById('confirmSubmit');
+
+
+    // Success modal elements
+    const successModal = document.getElementById('successModal');
+    const successMsg = document.getElementById('success_message');
+    const closeSuccessBtn = document.getElementById('closeSuccess');
+
+
+    // Transient state for file
+    let pendingFile = null;
+
+
+    // Set date min/max (no future, not older than 1 year)
+    (function(){
+      const d = document.getElementById("date");
+      if (!d) return;
+      const today = new Date();
+      today.setHours(0,0,0,0);
+      const oneYearAgo = new Date(today);
+      oneYearAgo.setFullYear(today.getFullYear() - 1);
+      const toISO = (dt) => dt.toISOString().slice(0,10);
+      d.max = toISO(today);
+      d.min = toISO(oneYearAgo);
+    })();
+
+
+    function setLoading(loading){
+      if(loading){
+        btn.setAttribute("disabled", "true");
+        btn.innerHTML = `<span class="row"><span class="spinner" aria-hidden="true"></span><span>Requesting…</span></span>`;
+        statusEl.textContent = "";
+      } else {
+        btn.removeAttribute("disabled");
+        btn.innerHTML = `<span class="label">Request Advance</span>`;
+      }
+    }
+
+
+    // Confirm modal open/close
+    function openConfirm(values){
+      sumName.textContent = values.name || '-';
+      sumEmail.textContent = values.email || '-';
+      sumDept.textContent = values.department || '-';
+      sumDate.textContent = values.date || '-';
+      sumType.textContent = values.type || '-';
+      sumAmount.textContent = values.amount || '-';
+      sumDesc.textContent = values.description ? String(values.description).slice(0, 300) : '-';
+      sumReceipt.textContent = values.receiptName || 'None';
+      confirmModal.classList.add('show');
+      confirmModal.setAttribute('aria-hidden', 'false');
+    }
+    function closeConfirm(){
+      confirmModal.classList.remove('show');
+      confirmModal.setAttribute('aria-hidden', 'true');
+    }
+    cancelConfirmBtn.addEventListener('click', closeConfirm);
+
+
+    function openSuccess(message){
+      successMsg.textContent = message || 'Your advance request has been submitted successfully.';
+      successModal.style.display = 'flex';
+      // Force reflow to ensure the display change takes effect before adding the show class
+      void successModal.offsetHeight;
+      successModal.classList.add('show');
+      successModal.setAttribute('aria-hidden', 'false');
+    }
+    function closeSuccess(){
+      successModal.classList.remove('show');
+      successModal.style.display = 'none';
+      successModal.setAttribute('aria-hidden', 'true');
+    }
+    closeSuccessBtn.addEventListener('click', closeSuccess);
+
+
+    // Submit handler (step 1: validate -> show confirm)
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+
+
+      if(!form.checkValidity()){
+        statusEl.textContent = "Please complete the required fields.";
+        statusEl.className = "status err";
+        form.reportValidity?.();
+        return;
+      }
+
+
+      const dateValue = document.getElementById("date")?.value;
+      if (dateValue) {
+        const today = new Date(); today.setHours(0,0,0,0);
+        const oneYearAgo = new Date(today); oneYearAgo.setFullYear(today.getFullYear() - 1);
+        const picked = new Date(dateValue + "T00:00:00");
+        if (picked > today) {
+          statusEl.textContent = "Date cannot be in the future.";
+          statusEl.className = "status err";
+          return;
+        }
+        if (picked < oneYearAgo) {
+          statusEl.textContent = "Date cannot be older than one year.";
+          statusEl.className = "status err";
+          return;
+        }
+      }
+
+
+      const values = {
+        name: document.getElementById('name')?.value || '',
+        email: document.getElementById('email')?.value || '',
+        department: document.getElementById('department')?.value || '',
+        date: document.getElementById('date')?.value || '',
+        type: document.getElementById('type')?.value || '',
+        amount: document.getElementById('amount')?.value || '',
+        description: document.getElementById('description')?.value || ''
+      };
+      pendingFile = document.getElementById('receipt')?.files?.[0] || null;
+      if (!pendingFile) {
+        statusEl.textContent = "Attachment is mandatory for advance requests.";
+        statusEl.className = "status err";
+        return;
+      }
+      values.receiptName = pendingFile.name;
+      openConfirm(values);
+    });
+
+
+    // Actual submit after confirmation
+    async function performSubmit(){
+      const formData = new FormData(form);
+
+
+      async function fileToBase64(file){
+        return new Promise((resolve, reject) => {
+          const reader = new FileReader();
+          reader.onload = () => resolve(String(reader.result));
+          reader.onerror = reject;
+          reader.readAsDataURL(file);
+        });
+      }
+
+
+      if (pendingFile) {
+        const dataUrl = await fileToBase64(pendingFile);
+        const [meta, b64] = dataUrl.split(",");
+        const mime = (meta.match(/data:(.*?);base64/) || [])[1] || pendingFile.type || "application/octet-stream";
+        if (b64.length * 0.75 > 10 * 1024 * 1024) {
+          statusEl.textContent = "Attachment too large (max ~10MB).";
+          statusEl.className = "status err";
+          return;
+        }
+        formData.set("receipt_b64", b64);
+        formData.set("receipt_name", pendingFile.name);
+        formData.set("receipt_type", mime);
+      }
+
+
+      closeConfirm();
+      setLoading(true);
+      try {
+        // IMPORTANT: no headers (avoid preflight). Apps Script will parse FormData into e.parameter.
+        const res = await fetch(scriptURL, { method: "POST", body: formData });
+        const data = await res.json().catch(() => ({ ok: false, message: "Invalid response" }));
+        if (data && data.ok) {
+          form.reset();
+          openSuccess(data && data.id ? `Advance requested successfully. ID: ${data.id}` : 'Advance requested successfully.');
+          statusEl.textContent = '';
+          statusEl.className = 'status';
+        } else {
+          const msg = (data && data.message) ? String(data.message) : "Error submitting advance.";
+          statusEl.textContent = msg;
+          statusEl.className = "status err";
+        }
+      } catch (err) {
+        statusEl.textContent = "Network error. Please try again.";
+        statusEl.className = "status err";
+      } finally {
+        setLoading(false);
+        pendingFile = null;
+      }
+    }
+    confirmSubmitBtn.addEventListener('click', performSubmit);
+  </script>
+</body>
+</html>
